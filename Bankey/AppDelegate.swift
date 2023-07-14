@@ -16,7 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let mainViewController = MainViewController()
     let loginViewController = LoginViewController()
     let onboardingContainerViewController = OnboardingContainerViewController()
-    let dummyViewController = DummyViewController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
@@ -25,10 +24,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.backgroundColor = .systemBackground
         
         loginViewController.delegate = self
-        dummyViewController.logoutDelegate = self
         onboardingContainerViewController.delegate = self
-        //window?.rootViewController = mainViewController
-        window?.rootViewController = AccountSummaryViewController()
+        
+        let vc = mainViewController
+        vc.setStatusBar()
+
+        UINavigationBar.appearance().isTranslucent = false
+        UINavigationBar.appearance().backgroundColor = appColor
+            
+        window?.rootViewController = vc
         
         return true
     }
@@ -38,23 +42,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate: LoginViewControllerDelegate {
     func didLogin() {
         if LocalState.hasOnboarded {
-            setRootViewController(dummyViewController)
+            setRootViewController(mainViewController)
         } else {
             setRootViewController(onboardingContainerViewController)
         }
     }
 }
 
-extension AppDelegate: LogoutDelegate {
-    func didLogout() {
-        setRootViewController(loginViewController)
-    }
-}
-
 extension AppDelegate: OnboardingContainerViewControllerDelegate {
     func didFinishOnboarding() {
         LocalState.hasOnboarded = true
-        setRootViewController(dummyViewController)
+        setRootViewController(mainViewController)
+    }
+}
+
+extension AppDelegate: LogoutDelegate {
+    func didLogout() {
+        setRootViewController(loginViewController)
     }
 }
 
